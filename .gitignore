@@ -1,0 +1,42 @@
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# Secrets and environment variables
+.env
+*.pem
+kaggle.json
+.dlt/
+
+# Data files
+data/raw/
+*.csv
+*.parquet
+*.zip
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.ipynb_checkpoints
+
+# dbt artifacts
+dbt_project/target/
+dbt_project/dbt_packages/
+dbt_project/logs/
+**/.user.yml
+
+# Dagster storage
+.dagster/
+dagster_home/
+storage/
+
+# Superset
+superset_home/
+
+# Files not in initial ST-01 - ST-04 scope
+analysis/
+olist_er_diagram.png
+.vscode/
+

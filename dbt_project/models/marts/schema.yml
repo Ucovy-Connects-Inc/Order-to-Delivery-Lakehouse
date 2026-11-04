@@ -1,0 +1,160 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: "Customer dimension table."
+    columns:
+      - name: customer_id
+        description: "Primary key for customers."
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_seller
+    description: "Seller dimension table."
+    columns:
+      - name: seller_id
+        description: "Primary key for sellers."
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_product
+    description: "Product dimension table with English category translations."
+    columns:
+      - name: product_id
+        description: "Primary key for products."
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_date
+    description: "Standard calendar date dimension."
+    columns:
+      - name: date_day
+        description: "Primary key (calendar date)."
+        tests:
+          - unique
+          - not_null
+
+  - name: fact_order_items
+    description: "Item-grain fact table for revenue and freight analysis."
+    columns:
+      - name: order_id
+        description: "Foreign key referencing orders."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+      - name: order_item_id
+        description: "Item line index within order."
+        tests:
+          - not_null
+      - name: product_id
+        description: "Foreign key referencing dim_product."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_product')
+              field: product_id
+      - name: seller_id
+        description: "Foreign key referencing dim_seller."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_seller')
+              field: seller_id
+      - name: price
+        description: "Item price."
+        tests:
+          - not_null
+
+  - name: mart_delivery_performance
+    description: "Order-grain gold mart for delivery KPIs, on-time rates, and stage durations."
+    columns:
+      - name: order_id
+        description: "Primary key at order grain."
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "Foreign key referencing dim_customer."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customer')
+              field: customer_id
+      - name: order_purchase_date
+        description: "Foreign key referencing dim_date."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_day
+      - name: is_delivered
+        description: "Flag indicating whether order was successfully delivered."
+        tests:
+          - not_null
+      - name: is_canceled
+        description: "Flag indicating whether order was canceled."
+        tests:
+          - not_null
+
+  - name: mart_delivery_daily
+    description: "Aggregated daily delivery performance by purchase date and state for fast dashboard charts."
+    columns:
+      - name: purchase_date
+        description: "Date of purchase."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_day
+      - name: customer_state
+        description: "Customer state code."
+        tests:
+          - not_null
+      - name: total_orders
+        description: "Total orders purchased."
+        tests:
+          - not_null
+
+  - name: mart_delivery_performance_enriched
+    description: "Order-grain delivery performance joined with state-daily benchmark indicators."
+    columns:
+      - name: order_id
+        description: "Primary key at order grain."
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "Foreign key referencing dim_customer."
+        tests:
+          - not_null
+
+  - name: mart_order_items_enriched
+    description: "Enriched item-grain fact table joined with product categories, customer state, and seller state."
+    columns:
+      - name: order_id
+        description: "Order identifier."
+        tests:
+          - not_null
+      - name: order_item_id
+        description: "Item index."
+        tests:
+          - not_null
+      - name: product_category_name_english
+        description: "English category name."
+        tests:
+          - not_null
+
+  - name: mart_state_freight_delivery
+    description: "State-level summary uniting on-time delivery rates, delays, and freight burden for correlation analysis."
+    columns:
+      - name: customer_state
+        description: "State code."
+        tests:
+          - unique
+          - not_null
+
