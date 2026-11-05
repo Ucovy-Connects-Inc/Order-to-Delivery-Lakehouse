@@ -35,7 +35,10 @@ storage/
 # Superset
 superset_home/
 
-# Files not in initial ST-01 - ST-04 scope
+# Files not in initial setup scope
+dbt_project/
+orchestration/
+pipelines/
 analysis/
 olist_er_diagram.png
 .vscode/
