@@ -38,9 +38,10 @@ superset_home/
 # Files not in initial setup scope
 dbt_project/
 orchestration/
-pipelines/
+pipelines/clean_product_categories.py
+pipelines/build_silver.py
+pipelines/load_bronze.py
 analysis/
 olist_er_diagram.png
 .vscode/
 README.md
-
